@@ -7,31 +7,33 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: fservice
-      POSTGRES_DB: fservice_db  
-      POSTGRES_PORT: 5433       
-    command: postgres -p 5433  
-    volumes: 
-      - ./postgresf-data:/data/postgresf 
+      POSTGRES_DB: fservice_db
+      POSTGRES_PORT: 5433  # Для явного указания порта
+    command: ["postgres", "-p", "5433"]  # Правильный формат команды
+    volumes:
+      - ./postgresf-data:/var/lib/postgresql/data  # Используем стандартный путь
     ports:
       - "15433:5433"
+    networks:
+      - htt_server_network
 
   postgres-processor:
-    container_name: postgres-processor
     image: postgres:16.4
+    container_name: postgres-processor
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pservice
-      POSTGRES_DB: pservice_db  # Явно задаём имя БД
-      POSTGRES_PORT: 5434  
-      command: postgres -p 5434
-    volumes: 
-      - ./postgresp-data:/data/postgresp
+      POSTGRES_DB: pservice_db
+      POSTGRES_PORT: 5434
+    command: ["postgres", "-p", "5434"]  # Правильный формат команды
+    volumes:
+      - ./postgresp-data:/var/lib/postgresql/data  # Используем стандартный путь
     ports:
       - "15434:5434"
-    networks: 
+    networks:
       - htt_server_network
 
 networks:
   htt_server_network:
-    name: htt_network  # Явное имя для сети
+    name: htt_network
     driver: bridge
