@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  filter-service:
+    build:
+      context: .
+      dockerfile: ./filter-service/Dockerfile
+    depends_on:
+      - postgres-filter
+    ports:
+      - "8081:8081"
+    networks:
+      - htt_server_network
   postgres-filter:
     image: postgres:16.4
     container_name: postgres-filter
@@ -8,10 +18,10 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: fservice
       POSTGRES_DB: fservice_db
-      POSTGRES_PORT: 5433  # Для явного указания порта
-    command: ["postgres", "-p", "5433"]  # Правильный формат команды
+      POSTGRES_PORT: 5433  
+    command: ["postgres", "-p", "5433"]  
     volumes:
-      - ./postgresf-data:/var/lib/postgresql/data  # Используем стандартный путь
+      - ./postgresf-data:/var/lib/postgresql/data  
     ports:
       - "15433:5433"
     networks:
@@ -25,9 +35,9 @@ services:
       POSTGRES_PASSWORD: pservice
       POSTGRES_DB: pservice_db
       POSTGRES_PORT: 5434
-    command: ["postgres", "-p", "5434"]  # Правильный формат команды
+    command: ["postgres", "-p", "5434"]  
     volumes:
-      - ./postgresp-data:/var/lib/postgresql/data  # Используем стандартный путь
+      - ./postgresp-data:/var/lib/postgresql/data  
     ports:
       - "15434:5434"
     networks:

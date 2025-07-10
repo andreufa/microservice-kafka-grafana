@@ -1,7 +1,7 @@
 package main
 
 import (
-	"filter-service/filter-service/internal/input"
+	"filter-service/internal/raw"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -19,6 +19,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	db.Migrator().DropTable(&input.Fservise{})
-	db.AutoMigrate(&input.Fservise{})
+	db.Migrator().DropTable(&raw.RawData{})
+	db.AutoMigrate(&raw.RawData{})
 }

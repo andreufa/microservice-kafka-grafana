@@ -1,7 +1,7 @@
 package configs
 
 import (
-	"filter-service/filter-service/commom"
+	"filter-service/commom"
 	"log"
 	"os"
 
@@ -16,7 +16,7 @@ type DbConfig struct {
 	Dsn string
 }
 
-func LaodConfig() *Config {
+func LoadConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
 		log.Println(commom.ErrLoadConfig, err)

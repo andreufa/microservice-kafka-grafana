@@ -1,7 +1,7 @@
 package db
 
 import (
-	"filter-service/filter-service/configs"
+	"filter-service/configs"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
