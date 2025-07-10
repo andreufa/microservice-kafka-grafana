@@ -42,6 +42,25 @@ services:
       - "15434:5434"
     networks:
       - htt_server_network
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    # ports:
+    #   - "19090:9090"
+    networks:
+      - htt_server_network
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "19090:19090"  # Проброс порта на хост
+    volumes:
+      - .\\nginx-auth\\nginx\\conf\\nginx.conf:/etc/nginx/nginx.conf:ro
+      - .\\nginx-auth\\nginx\\conf\\.htpasswd:/etc/nginx/.htpasswd:ro
+    depends_on:
+      - prometheus
+    networks:
+      - htt_server_network
 
 networks:
   htt_server_network:

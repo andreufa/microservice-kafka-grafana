@@ -1,0 +1,25 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    scrape_interval: 15s
+    scrape_timeout: 15s
+
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "filter-service"
+    scrape_interval: 15s
+    scrape_timeout: 15s
+
+    static_configs:
+      - targets: ["filter-service:18082"]
+
+  - job_name: "filter-processor"
+    scrape_interval: 15s
+    scrape_timeout: 15s
+
+    static_configs:
+      - targets: ["filter-service:18083"]
