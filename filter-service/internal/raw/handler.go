@@ -32,6 +32,6 @@ func (handler *RawHandler) Put() http.HandlerFunc {
 		if err != nil {
 			response.Json(w, err, http.StatusInternalServerError)
 		}
-		response.Json(w, nil, http.StatusOK)
+		response.Json(w, "success", http.StatusOK)
 	}
 }

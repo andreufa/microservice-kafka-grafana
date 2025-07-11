@@ -2,11 +2,13 @@ version: '3.8'
 
 services:
   filter-service:
+    hostname: filter-service
     build:
       context: .
       dockerfile: ./filter-service/Dockerfile
     depends_on:
-      - postgres-filter
+      postgres-filter:
+        condition: service_healthy
     ports:
       - "8081:8081"
     networks:
@@ -24,6 +26,11 @@ services:
       - ./postgresf-data:/var/lib/postgresql/data  
     ports:
       - "15433:5433"
+    healthcheck:  # Проверка готовности PostgreSQL
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5433"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
     networks:
       - htt_server_network
 
@@ -46,21 +53,22 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    # ports:
-    #   - "19090:9090"
-    networks:
-      - htt_server_network
-  nginx:
-    image: nginx:alpine
     ports:
-      - "19090:19090"  # Проброс порта на хост
-    volumes:
-      - .\\nginx-auth\\nginx\\conf\\nginx.conf:/etc/nginx/nginx.conf:ro
-      - .\\nginx-auth\\nginx\\conf\\.htpasswd:/etc/nginx/.htpasswd:ro
-    depends_on:
-      - prometheus
+      - "19090:9090"
     networks:
       - htt_server_network
+  grafana:
+    image: grafana/grafana-oss:9.4.3
+    hostname: grafana
+    ports:
+      - "13000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    networks:
+      - htt_server_network
+
+volumes:
+  grafana-data:
 
 networks:
   htt_server_network:
