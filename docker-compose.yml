@@ -53,8 +53,8 @@ services:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "19090:9090"
+    # ports:
+    #   - "19090:9090"
     networks:
       - htt_server_network
   grafana:
@@ -66,9 +66,48 @@ services:
       - grafana-data:/var/lib/grafana
     networks:
       - htt_server_network
+  # Kafka broker
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    hostname: kafka  # Явное указание hostname
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_PROCESS_ROLES=broker,controller
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092  # kafka:9092 это для контейнера ,PLAINTEXT_HOST://localhost:9092
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+      - KAFKA_CFG_NODE_ID=1
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    volumes:
+      - kafka_data:/bitnami/kafka
+    networks:
+    - htt_server_network 
+
+  # Kafka UI
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "18080:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+      - KAFKA_CLUSTERS_0_ZOOKEEPER= # Пусто, так как используем KRaft
+    extra_hosts:
+      - "host.docker.internal:host-gateway"  # Для доступа к хосту из контейнера
+    depends_on:
+      - kafka
+    networks:
+    - htt_server_network 
 
 volumes:
   grafana-data:
+  kafka_data:
 
 networks:
   htt_server_network:

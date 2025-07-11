@@ -2,6 +2,7 @@ package main
 
 import (
 	"filter-service/configs"
+	"filter-service/internal/kafkapkg"
 	"filter-service/internal/raw"
 	"filter-service/metrics"
 	"filter-service/middleware"
@@ -13,6 +14,12 @@ import (
 func main() {
 	conf := configs.LoadConfig()
 	db := db.NewDb(conf)
+	//Kafka
+	addreses := []string{"kafka:9092"}
+	topic := "describe"
+
+	producer := kafkapkg.NewProducer(addreses, topic)
+	defer producer.Close() // Используем defer для гарантированного закрытия
 
 	// Prometheus
 	go func() {
@@ -23,9 +30,10 @@ func main() {
 
 	//Repositories
 	rawRepository := raw.NewRawRepository(db)
+	kfkReposotiry := raw.NewKafkaReposotiry(producer)
 
 	//Services
-	rawService := raw.NewRawService(rawRepository)
+	rawService := raw.NewRawService(rawRepository, kfkReposotiry)
 
 	//Handlers
 	raw.NewRawHandler(router, raw.RawHandlerDeps{
