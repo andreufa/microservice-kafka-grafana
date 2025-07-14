@@ -13,6 +13,16 @@ services:
       - "8081:8081"
     networks:
       - htt_server_network
+  processor-service:
+    hostname: processor-service  
+    build:
+      context: .
+      dockerfile: ./processor-service/Dockerfile
+    depends_on:
+      postgres-processor:
+        condition: service_healthy
+    networks:
+    - htt_server_network
   postgres-filter:
     image: postgres:16.4
     container_name: postgres-filter
@@ -47,6 +57,11 @@ services:
       - ./postgresp-data:/var/lib/postgresql/data  
     ports:
       - "15434:5434"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -p 5434"]
+      interval: 2s
+      timeout: 5s
+      retries: 10
     networks:
       - htt_server_network
   prometheus:
@@ -103,7 +118,7 @@ services:
     depends_on:
       - kafka
     networks:
-    - htt_server_network 
+      - htt_server_network 
 
 volumes:
   grafana-data:
