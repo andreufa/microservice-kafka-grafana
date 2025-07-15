@@ -1,6 +1,7 @@
 package raw
 
 import (
+	"context"
 	"filter-service/internal/kafkapkg"
 	"filter-service/pkg/db"
 )
@@ -31,7 +32,7 @@ func (r *RawRepository) Save(rawData *RawData) (*RawData, error) {
 	return rawData, nil
 }
 
-func (k *KafkaRepository) Send(data []byte) error {
+func (k *KafkaRepository) Send(ctx context.Context, data []byte) error {
 	err := k.Producer.Produce(data)
 	return err
 }

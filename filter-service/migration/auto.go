@@ -2,7 +2,6 @@ package main
 
 import (
 	"filter-service/internal/raw"
-	"os"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -10,11 +9,11 @@ import (
 )
 
 func main() {
-	err := godotenv.Load("./filter-service/.env")
+	err := godotenv.Load()
 	if err != nil {
 		panic(err)
 	}
-	conf := os.Getenv("DSN")
+	conf := "host=localhost user=postgres password=fservice dbname=fservice_db port=15433 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(conf))
 	if err != nil {
 		panic(err)

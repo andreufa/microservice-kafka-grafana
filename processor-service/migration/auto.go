@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"processor-service/internal/processor"
 
 	"github.com/joho/godotenv"
@@ -14,7 +13,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	conf := os.Getenv("DSN")
+	conf := "host=localhost user=postgres password=pservice dbname=pservice_db port=15434 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(conf))
 	if err != nil {
 		panic(err)
